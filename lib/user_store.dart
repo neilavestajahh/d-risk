@@ -22,6 +22,17 @@ class UserStore {
     await prefs.setString(_keyPassword, password);
   }
 
+  /// Ambil data profil user yang terdaftar (nama & email).
+  /// Dipakai oleh halaman Profil supaya datanya sama dengan yang dipakai
+  /// saat daftar dan login. Return null kalau belum ada user terdaftar.
+  static Future<Map<String, String>?> getUser() async {
+    final prefs = await SharedPreferences.getInstance();
+    final name = prefs.getString(_keyName);
+    final email = prefs.getString(_keyEmail);
+    if (name == null || email == null) return null;
+    return {'name': name, 'email': email};
+  }
+
   /// Cek login: email & password harus cocok dengan yang tersimpan.
   /// Return nama kalau berhasil, null kalau gagal (email tidak ditemukan
   /// atau password salah).

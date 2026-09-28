@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'user_store.dart';
+import 'welcome_page.dart';
 
 // Letakkan di: lib/profil_screen.dart
 // (langsung di lib/, BUKAN di lib/screens/)
@@ -9,11 +11,6 @@ const Color _pfNavyDark = Color(0xFF1B2A4A);
 const Color _pfTextGrey = Color(0xFF7A8B9E);
 const Color _pfCardBorder = Color(0xFFE2E8F0);
 const Color _pfCheckGreen = Color(0xFF22C55E);
-
-// Data profil contoh — nanti bisa diganti dengan data user asli (misalnya
-// dari user_store.dart / API).
-const String _userName = 'Sania Pramita Salim';
-const String _userEmail = 'saniapramita@gmail.com';
 
 BoxDecoration _pfBgGradient() {
   return const BoxDecoration(
@@ -77,16 +74,51 @@ Widget _pfAvatar({double size = 72}) {
   );
 }
 
-Widget _pfNameHeader() {
-  return Column(
-    children: [
-      _pfAvatar(),
-      const SizedBox(height: 10),
-      const Text(_userName, style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _pfNavyDark)),
-      const SizedBox(height: 2),
-      Text(_userEmail, style: const TextStyle(fontSize: 12.5, color: _pfNavyDark)),
-    ],
-  );
+/// Header foto + nama + email. Datanya diambil dari akun yang terdaftar
+/// (UserStore), jadi selalu sama dengan yang dipakai saat daftar & login.
+/// Dipakai di semua halaman profil.
+Widget _pfNameHeader() => const _PfNameHeader();
+
+class _PfNameHeader extends StatefulWidget {
+  const _PfNameHeader();
+
+  @override
+  State<_PfNameHeader> createState() => _PfNameHeaderState();
+}
+
+class _PfNameHeaderState extends State<_PfNameHeader> {
+  late final Future<Map<String, String>?> _userFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _userFuture = UserStore.getUser();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<Map<String, String>?>(
+      future: _userFuture,
+      builder: (context, snapshot) {
+        final loaded = snapshot.connectionState == ConnectionState.done;
+        final name = snapshot.data?['name'] ?? '';
+        final email = snapshot.data?['email'] ?? '';
+
+        return Column(
+          children: [
+            _pfAvatar(),
+            const SizedBox(height: 10),
+            Text(
+              loaded ? (name.isEmpty ? 'Pengguna' : name) : '',
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: _pfNavyDark),
+            ),
+            const SizedBox(height: 2),
+            Text(email, style: const TextStyle(fontSize: 12.5, color: _pfNavyDark)),
+          ],
+        );
+      },
+    );
+  }
 }
 
 void _pfShowComingSoon(BuildContext context) {
@@ -100,6 +132,15 @@ void _pfShowComingSoon(BuildContext context) {
 // =============================================================================
 class ProfilScreen extends StatelessWidget {
   const ProfilScreen({super.key});
+
+  /// Logout: kembali ke halaman login dan hapus semua halaman sebelumnya.
+  /// Data akun yang terdaftar tidak dihapus, jadi tetap bisa login lagi.
+  void _logout(BuildContext context) {
+    Navigator.of(context).pushAndRemoveUntil(
+      MaterialPageRoute(builder: (_) => const WelcomePage()),
+      (route) => false,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -160,7 +201,7 @@ class ProfilScreen extends StatelessWidget {
                         width: double.infinity,
                         height: 48,
                         child: OutlinedButton(
-                          onPressed: () => _pfShowComingSoon(context),
+                          onPressed: () => _logout(context),
                           style: OutlinedButton.styleFrom(
                             side: const BorderSide(color: _pfCardBorder),
                             shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),

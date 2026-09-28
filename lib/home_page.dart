@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
-import 'article_list_screen.dart'; // sesuaikan path sesuai struktur project-mu
-import 'notification_screen.dart'; // sesuaikan path sesuai struktur project-mu
-import 'health_book_page.dart'; // halaman Health Book - Daftar Bab Diabetes
-import 'kunjungan_dokter_screen.dart'; // halaman Kunjungan Dokter (dipakai di Home Care)
-import 'konsultasi_dokter_screen.dart'; // halaman Konsultasi Dokter (list dokter)
-import 'screening_screen.dart'; // berisi class ScreeningKesehatanPage (halaman intro)
-import 'home_care_screen.dart'; // halaman Home Care
-import 'profil_screen.dart'; // halaman Profil (dibuka lewat avatar)
+import 'article_list_screen.dart';
+import 'notification_screen.dart';
+import 'health_book_page.dart';
+import 'kunjungan_dokter_screen.dart';
+import 'screening_screen.dart';
+import 'home_care_screen.dart';
+import 'profil_screen.dart'; // berisi ProfilScreen dan RiwayatScreen
+import 'konsultasi_dokter_screen.dart';
+import 'olahraga_screen.dart';
 
 /// Halaman Beranda (Home) untuk aplikasi D-risk (diabetes risk screening)
 class HomePage extends StatefulWidget {
@@ -19,7 +20,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  int _selectedNavIndex = 0;
+  int _selectedIndex = 0;
 
   // Palet Warna
   static const Color primaryBlue = Color(0xFF1E6FE0);
@@ -27,24 +28,23 @@ class _HomePageState extends State<HomePage> {
   static const Color textGrey = Color(0xFF7A8B9E);
   static const Color accentGreen = Color(0xFF22A45D);
   static const Color lightGreenBg = Color(0xFFE7F7EF);
+  static const Color accentOrange = Color(0xFFFF8A3D);
+  static const Color lightOrangeBg = Color(0xFFFFF1E6);
+  static const Color accentPurple = Color(0xFF8B5CF6);
+  static const Color lightPurpleBg = Color(0xFFF2ECFF);
+  static const Color lightBlueBg = Color(0xFFE8F1FE);
   static const Color fieldFillColor = Color(0xFFF1F5F9);
   static const Color cardBorderColor = Color(0xFFE2E8F0);
+  static const Color bannerBg = Color(0xFFDCEBFF);
 
-  // Menggunakan model Article (dari article_list_screen.dart) supaya data
-  // yang tampil di Home, di List, dan di Detail selalu konsisten.
-  // Untuk gambar asli (network image) dipetakan lewat _newsImageUrls,
-  // karena model Article aslinya pakai thumbGradient, bukan URL gambar.
   static const List<String> _newsImageUrls = [
     'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?w=200&q=80',
-    'https://images.unsplash.com/photo-1631815589968-fdb09a223b1e?w=200&q=80',
     'https://images.unsplash.com/photo-1490645935967-10de6ba17061?w=200&q=80',
+    'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=200&q=80',
   ];
 
   List<Article> get _homeNewsItems => articles.take(3).toList();
 
-  /// Ambil kata pertama dari nama supaya sapaan di dashboard singkat,
-  /// walau nama lengkapnya terdiri dari beberapa kata.
-  /// Contoh: "Neila Vesta" -> "Neila"
   String get _firstName {
     final trimmed = widget.userName.trim();
     if (trimmed.isEmpty) return trimmed;
@@ -54,28 +54,43 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF8FAFC),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          physics: const BouncingScrollPhysics(),
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              _buildHeader(),
-              const SizedBox(height: 18),
-              _buildSearchBar(),
-              const SizedBox(height: 18),
-              _buildScreeningBanner(),
-              const SizedBox(height: 22),
-              _buildRiskSection(),
-              const SizedBox(height: 22),
-              _buildNewsSection(),
+      bottomNavigationBar: _buildBottomNav(),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              Color(0xFFCFE0FB),
+              Color(0xFFBFE8F2),
+              Color(0xFFD6F2DE),
+              Color(0xFFFBE6D6),
+              Color(0xFFF8FAFC),
             ],
+            stops: [0.0, 0.22, 0.45, 0.65, 0.9],
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                _buildHeader(),
+                const SizedBox(height: 18),
+                _buildSearchBar(),
+                const SizedBox(height: 18),
+                _buildDiabetesBanner(),
+                const SizedBox(height: 22),
+                _buildQuickAccessGrid(),
+                const SizedBox(height: 22),
+                _buildRecommendationSection(),
+              ],
+            ),
           ),
         ),
       ),
-      bottomNavigationBar: _buildBottomNav(),
     );
   }
 
@@ -90,7 +105,7 @@ class _HomePageState extends State<HomePage> {
               Row(
                 children: [
                   Text(
-                    'Halo, $_firstName',
+                    'Hi, $_firstName',
                     style: const TextStyle(
                       fontSize: 19,
                       fontWeight: FontWeight.w800,
@@ -103,7 +118,7 @@ class _HomePageState extends State<HomePage> {
               ),
               const SizedBox(height: 3),
               const Text(
-                'Bagaimana kondisi kesehatanmu hari ini?',
+                'Jaga kesehatan, wujudkan hidup yang lebih baik',
                 style: TextStyle(
                   fontSize: 12.5,
                   color: textGrey,
@@ -144,7 +159,6 @@ class _HomePageState extends State<HomePage> {
   Widget _buildAvatar() {
     return InkWell(
       onTap: () {
-        // Avatar diklik -> buka halaman Profil (menu akun)
         Navigator.of(context).push(
           MaterialPageRoute(builder: (_) => const ProfilScreen()),
         );
@@ -193,7 +207,7 @@ class _HomePageState extends State<HomePage> {
             SizedBox(width: 10),
             Expanded(
               child: Text(
-                'Cari artikel, dokter, penyakit, atau tips...',
+                'Cari artikel, dokter, atau layanan...',
                 style: TextStyle(fontSize: 13, color: textGrey),
               ),
             ),
@@ -203,47 +217,18 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  /// Banner "Early Screening, Better Living"
-  Widget _buildScreeningBanner() {
+  /// Banner "Kenali Risiko Diabetes Sejak Dini"
+  Widget _buildDiabetesBanner() {
     return Container(
+      padding: const EdgeInsets.fromLTRB(18, 16, 12, 16),
       decoration: BoxDecoration(
-        color: navyDark,
+        color: bannerBg,
         borderRadius: BorderRadius.circular(20),
       ),
-      clipBehavior: Clip.antiAlias,
-      child: Stack(
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Positioned(
-            right: 0,
-            top: 0,
-            bottom: 0,
-            width: 130,
-            child: Image.network(
-              'https://images.unsplash.com/photo-1584982751601-97dcc096659c?w=300&q=80',
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) => Container(
-                color: primaryBlue.withValues(alpha: 0.3),
-              ),
-            ),
-          ),
-          Positioned.fill(
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.centerLeft,
-                  end: Alignment.centerRight,
-                  colors: [
-                    navyDark,
-                    navyDark.withValues(alpha: 0.85),
-                    navyDark.withValues(alpha: 0.0),
-                  ],
-                  stops: const [0.0, 0.55, 1.0],
-                ),
-              ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.fromLTRB(18, 16, 18, 16),
+          Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisSize: MainAxisSize.min,
@@ -252,47 +237,40 @@ class _HomePageState extends State<HomePage> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
-                    color: Colors.white.withValues(alpha: 0.15),
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: const Text(
-                    'Pemeriksaan Rutin',
+                    'Cek Risiko Diabetes',
                     style: TextStyle(
                       fontSize: 10.5,
-                      color: Colors.white,
+                      color: primaryBlue,
                       fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
                 const SizedBox(height: 10),
-                const SizedBox(
-                  width: 190,
-                  child: Text(
-                    'Early Screening,\nBetter Living',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w800,
-                      color: Colors.white,
-                      height: 1.2,
-                    ),
+                const Text(
+                  'Kenali Risiko\nDiabetes Sejak Dini',
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w800,
+                    color: navyDark,
+                    height: 1.25,
                   ),
                 ),
                 const SizedBox(height: 8),
-                const SizedBox(
-                  width: 175,
-                  child: Text(
-                    'Deteksi dini diabetes sekarang, hidup lebih sehat dan berkualitas.',
-                    style: TextStyle(
-                      fontSize: 11,
-                      color: Color(0xFFCBD5E1),
-                      height: 1.4,
-                    ),
+                const Text(
+                  'Cek tingkat risiko diabetesmu dengan mudah dan cepat, hanya dalam hitungan menit.',
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: textGrey,
+                    height: 1.4,
                   ),
                 ),
                 const SizedBox(height: 14),
                 InkWell(
                   onTap: () {
-                    // Arahkan ke halaman Screening Kesehatan Mandiri
                     Navigator.of(context).push(
                       MaterialPageRoute(
                           builder: (_) => const ScreeningKesehatanPage()),
@@ -312,7 +290,7 @@ class _HomePageState extends State<HomePage> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Mulai Pengecekan',
+                          'Mulai Cek Sekarang',
                           style: TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.w600,
@@ -332,117 +310,196 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
           ),
+          const SizedBox(width: 8),
+          _buildGlucoseIllustration(),
         ],
       ),
     );
   }
 
-  /// Section "Risiko Diabetes Anda"
-  Widget _buildRiskSection() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Risiko Diabetes Anda',
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w700,
-            color: navyDark,
-          ),
-        ),
-        const SizedBox(height: 2),
-        const Text(
-          'Berdasarkan hasil screening terakhir',
-          style: TextStyle(fontSize: 12, color: textGrey),
-        ),
-        const SizedBox(height: 12),
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: cardBorderColor),
-          ),
-          child: Row(
-            children: [
-              Container(
-                width: 46,
-                height: 46,
-                decoration: const BoxDecoration(
-                  color: lightGreenBg,
-                  shape: BoxShape.circle,
-                ),
-                child: const Icon(
-                  Icons.favorite_rounded,
-                  color: accentGreen,
-                  size: 22,
-                ),
+  Widget _buildGlucoseIllustration() {
+    return SizedBox(
+      width: 92,
+      height: 118,
+      child: Stack(
+        clipBehavior: Clip.none,
+        alignment: Alignment.bottomCenter,
+        children: [
+          Positioned(
+            bottom: 0,
+            child: Container(
+              width: 74,
+              height: 96,
+              decoration: BoxDecoration(
+                color: primaryBlue,
+                borderRadius: BorderRadius.circular(18),
               ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      children: [
-                        const Text(
-                          'Hasil Anda menunjukkan risiko ',
-                          style: TextStyle(fontSize: 12.5, color: navyDark),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: lightGreenBg,
-                            borderRadius: BorderRadius.circular(6),
-                          ),
-                          child: const Text(
-                            'Rendah',
-                            style: TextStyle(
-                              fontSize: 11,
-                              fontWeight: FontWeight.w700,
-                              color: accentGreen,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        const Expanded(
-                          child: Text(
-                            'diabetes rendah.',
-                            style: TextStyle(
-                              fontSize: 12.5,
-                              color: navyDark,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    const Text(
-                      'Tetap jaga pola hidup sehat!',
-                      style: TextStyle(
-                        fontSize: 11.5,
-                        color: textGrey,
-                      ),
-                    ),
-                  ],
-                ),
+              child: const Icon(
+                Icons.back_hand_rounded,
+                color: Colors.white,
+                size: 40,
               ),
-            ],
+            ),
           ),
-        ),
-      ],
+          Positioned(
+            top: 0,
+            right: 0,
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(14),
+                boxShadow: [
+                  BoxShadow(
+                    color: navyDark.withValues(alpha: 0.12),
+                    blurRadius: 10,
+                    offset: const Offset(0, 4),
+                  ),
+                ],
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.water_drop_rounded,
+                      color: Colors.redAccent, size: 14),
+                  const SizedBox(height: 2),
+                  const Text(
+                    '98',
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.w800,
+                      color: navyDark,
+                    ),
+                  ),
+                  const Text(
+                    'mg/dL',
+                    style: TextStyle(fontSize: 7.5, color: textGrey),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
-  /// Section "Berita"
-  Widget _buildNewsSection() {
+  /// Grid akses cepat: Homecare, Healthbook, Olahraga, Screening
+  Widget _buildQuickAccessGrid() {
+    final items = [
+      _QuickAccessItem(
+        icon: Icons.home_repair_service_rounded,
+        label: 'Homecare',
+        subtitle: 'Kunjungan dokter ke rumah',
+        iconColor: accentGreen,
+        iconBg: lightGreenBg,
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const HomeCareScreen()),
+          );
+        },
+      ),
+      _QuickAccessItem(
+        icon: Icons.menu_book_rounded,
+        label: 'Healthbook',
+        subtitle: 'Simpan riwayat kesehatan',
+        iconColor: accentPurple,
+        iconBg: lightPurpleBg,
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const HealthBookPage()),
+          );
+        },
+      ),
+      _QuickAccessItem(
+        icon: Icons.fitness_center_rounded,
+        label: 'Olahraga',
+        subtitle: 'Latihan fisik rutin',
+        iconColor: accentOrange,
+        iconBg: lightOrangeBg,
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => OlahragaScreen()),
+          );
+        },
+      ),
+      _QuickAccessItem(
+        icon: Icons.monitor_heart_rounded,
+        label: 'Screening',
+        subtitle: 'Deteksi dini penyakit',
+        iconColor: primaryBlue,
+        iconBg: lightBlueBg,
+        onTap: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(builder: (_) => const ScreeningKesehatanPage()),
+          );
+        },
+      ),
+    ];
+
+    return GridView.builder(
+      shrinkWrap: true,
+      physics: const NeverScrollableScrollPhysics(),
+      itemCount: items.length,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        mainAxisSpacing: 12,
+        crossAxisSpacing: 12,
+        childAspectRatio: 1.25,
+      ),
+      itemBuilder: (context, index) => _buildQuickAccessCard(items[index]),
+    );
+  }
+
+  Widget _buildQuickAccessCard(_QuickAccessItem item) {
+    return InkWell(
+      onTap: item.onTap,
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: cardBorderColor),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              width: 34,
+              height: 34,
+              decoration: BoxDecoration(
+                color: item.iconBg,
+                borderRadius: BorderRadius.circular(10),
+              ),
+              child: Icon(item.icon, color: item.iconColor, size: 18),
+            ),
+            const SizedBox(height: 6),
+            Text(
+              item.label,
+              style: const TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: navyDark,
+              ),
+            ),
+            const SizedBox(height: 2),
+            Text(
+              item.subtitle,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(fontSize: 10, color: textGrey),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Section "Rekomendasi untuk Anda"
+  Widget _buildRecommendationSection() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -450,7 +507,7 @@ class _HomePageState extends State<HomePage> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              'Berita',
+              'Rekomendasi untuk Anda',
               style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w700,
@@ -485,7 +542,7 @@ class _HomePageState extends State<HomePage> {
           physics: const NeverScrollableScrollPhysics(),
           itemCount: _homeNewsItems.length,
           separatorBuilder: (context, index) => const SizedBox(height: 12),
-          itemBuilder: (context, index) => _buildNewsCard(
+          itemBuilder: (context, index) => _buildRecommendationCard(
             _homeNewsItems[index],
             index < _newsImageUrls.length ? _newsImageUrls[index] : null,
           ),
@@ -494,7 +551,19 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _buildNewsCard(Article item, String? imageUrl) {
+  Color _tagColor(String tag) {
+    if (tag.toLowerCase().contains('olahraga')) return accentGreen;
+    if (tag.toLowerCase().contains('kesehatan')) return accentOrange;
+    return primaryBlue;
+  }
+
+  Color _tagBgColor(String tag) {
+    if (tag.toLowerCase().contains('olahraga')) return lightGreenBg;
+    if (tag.toLowerCase().contains('kesehatan')) return lightOrangeBg;
+    return lightBlueBg;
+  }
+
+  Widget _buildRecommendationCard(Article item, String? imageUrl) {
     return InkWell(
       onTap: () {
         Navigator.of(context).push(
@@ -502,227 +571,211 @@ class _HomePageState extends State<HomePage> {
         );
       },
       borderRadius: BorderRadius.circular(14),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(12),
-            child: imageUrl != null
-                ? Image.network(
-                    imageUrl,
-                    width: 78,
-                    height: 78,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      width: 78,
-                      height: 78,
-                      color: fieldFillColor,
-                      child: const Icon(Icons.image_outlined, color: textGrey),
+      child: Container(
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: cardBorderColor),
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: imageUrl != null
+                  ? Image.network(
+                      imageUrl,
+                      width: 72,
+                      height: 72,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) => Container(
+                        width: 72,
+                        height: 72,
+                        color: fieldFillColor,
+                        child:
+                            const Icon(Icons.image_outlined, color: textGrey),
+                      ),
+                    )
+                  : Container(
+                      width: 72,
+                      height: 72,
+                      decoration: BoxDecoration(
+                        gradient: LinearGradient(
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                          colors: item.thumbGradient,
+                        ),
+                      ),
                     ),
-                  )
-                : Container(
-                    width: 78,
-                    height: 78,
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: item.thumbGradient,
+                      color: _tagBgColor(item.tag),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      item.tag,
+                      style: TextStyle(
+                        fontSize: 10,
+                        fontWeight: FontWeight.w700,
+                        color: _tagColor(item.tag),
                       ),
                     ),
                   ),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 2,
-                  ),
-                  decoration: BoxDecoration(
-                    color: lightGreenBg,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    item.tag,
+                  const SizedBox(height: 6),
+                  Text(
+                    item.title,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.w700,
-                      color: accentGreen,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: navyDark,
+                      height: 1.3,
                     ),
                   ),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  item.title,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 13,
-                    fontWeight: FontWeight.w600,
-                    color: navyDark,
-                    height: 1.3,
+                  const SizedBox(height: 6),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.calendar_today_outlined,
+                        size: 11,
+                        color: textGrey,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        item.date,
+                        style: const TextStyle(fontSize: 10.5, color: textGrey),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        '• ${item.readTime}',
+                        style: const TextStyle(fontSize: 10.5, color: textGrey),
+                      ),
+                    ],
                   ),
-                ),
-                const SizedBox(height: 6),
-                Row(
-                  children: [
-                    const Icon(
-                      Icons.calendar_today_outlined,
-                      size: 11,
-                      color: textGrey,
-                    ),
-                    const SizedBox(width: 4),
-                    Text(
-                      item.date,
-                      style: const TextStyle(fontSize: 10.5, color: textGrey),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      '• ${item.readTime}',
-                      style: const TextStyle(fontSize: 10.5, color: textGrey),
-                    ),
-                  ],
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  /// Bottom navigation bar dengan 5 menu
+  /// Bottom Navigation Bar: Beranda, Konsultasi, Riwayat, Profil
   Widget _buildBottomNav() {
     final items = [
-      _NavItem(Icons.home_rounded, 'Beranda'),
-      _NavItem(Icons.calendar_month_rounded, 'Book Health'),
-      _NavItem(Icons.chat_bubble_rounded, 'Konsultasi'),
-      _NavItem(Icons.monitor_heart_rounded, 'Screening'),
-      _NavItem(Icons.home_repair_service_rounded, 'Home Care'),
+      _NavItem(icon: Icons.home_rounded, label: 'Beranda'),
+      _NavItem(icon: Icons.chat_bubble_outline_rounded, label: 'Konsultasi'),
+      _NavItem(icon: Icons.history_rounded, label: 'Riwayat'),
+      _NavItem(icon: Icons.person_outline_rounded, label: 'Profil'),
     ];
 
     return Container(
-      padding: const EdgeInsets.symmetric(vertical: 8),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
           BoxShadow(
             color: navyDark.withValues(alpha: 0.06),
-            blurRadius: 16,
-            offset: const Offset(0, -4),
+            blurRadius: 12,
+            offset: const Offset(0, -2),
           ),
         ],
       ),
       child: SafeArea(
         top: false,
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: List.generate(items.length, (index) {
-            final isCenter = index == 2;
-            final isSelected = _selectedNavIndex == index;
-
-            if (isCenter) {
-              return GestureDetector(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: List.generate(items.length, (index) {
+              final isSelected = index == _selectedIndex;
+              return InkWell(
                 onTap: () {
-                  setState(() => _selectedNavIndex = index);
-                  // Index 2 = menu "Konsultasi" -> buka halaman KonsultasiDokterScreen (list dokter)
+                  // Beranda: tetap di halaman ini
+                  if (index == 0) {
+                    setState(() => _selectedIndex = 0);
+                    return;
+                  }
+
+                  // Semua tab sekarang punya halaman tujuan
+                  final Widget page;
+                  if (index == 1) {
+                    page = KonsultasiDokterScreen();
+                  } else if (index == 2) {
+                    page = RiwayatScreen(); // dari profil_screen.dart
+                  } else {
+                    page = const ProfilScreen();
+                  }
+
                   Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (_) => const KonsultasiDokterScreen()),
+                    MaterialPageRoute(builder: (_) => page),
                   );
                 },
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Container(
-                      width: 46,
-                      height: 46,
-                      decoration: const BoxDecoration(
-                        color: primaryBlue,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
+                borderRadius: BorderRadius.circular(12),
+                child: Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
                         items[index].icon,
-                        color: Colors.white,
                         size: 22,
+                        color: isSelected ? primaryBlue : textGrey,
                       ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      items[index].label,
-                      style: const TextStyle(
-                        fontSize: 9.5,
-                        color: primaryBlue,
-                        fontWeight: FontWeight.w600,
+                      const SizedBox(height: 3),
+                      Text(
+                        items[index].label,
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          fontWeight:
+                              isSelected ? FontWeight.w700 : FontWeight.w500,
+                          color: isSelected ? primaryBlue : textGrey,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
-            }
-
-            return InkWell(
-              onTap: () {
-                setState(() => _selectedNavIndex = index);
-                // Index 1 = menu "Book Health" -> buka halaman HealthBookPage
-                if (index == 1) {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const HealthBookPage()),
-                  );
-                }
-                // Index 3 = menu "Screening" -> buka halaman ScreeningKesehatanPage
-                if (index == 3) {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(
-                        builder: (_) => const ScreeningKesehatanPage()),
-                  );
-                }
-                // Index 4 = menu "Home Care" -> buka halaman HomeCareScreen
-                if (index == 4) {
-                  Navigator.of(context).push(
-                    MaterialPageRoute(builder: (_) => const HomeCareScreen()),
-                  );
-                }
-              },
-              borderRadius: BorderRadius.circular(10),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 6),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(
-                      items[index].icon,
-                      size: 22,
-                      color: isSelected ? primaryBlue : textGrey,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      items[index].label,
-                      style: TextStyle(
-                        fontSize: 9.5,
-                        color: isSelected ? primaryBlue : textGrey,
-                        fontWeight:
-                            isSelected ? FontWeight.w600 : FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            );
-          }),
+            }),
+          ),
         ),
       ),
     );
   }
 }
 
+class _QuickAccessItem {
+  final IconData icon;
+  final String label;
+  final String subtitle;
+  final Color iconColor;
+  final Color iconBg;
+  final VoidCallback onTap;
+
+  const _QuickAccessItem({
+    required this.icon,
+    required this.label,
+    required this.subtitle,
+    required this.iconColor,
+    required this.iconBg,
+    required this.onTap,
+  });
+}
+
 class _NavItem {
   final IconData icon;
   final String label;
 
-  const _NavItem(this.icon, this.label);
+  const _NavItem({required this.icon, required this.label});
 }

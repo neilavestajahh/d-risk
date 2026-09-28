@@ -17,11 +17,13 @@ class ArticleColors {
 }
 
 // ---------------------------------------------------------------------------
-// MODEL: SECTION ARTIKEL (bagian dalam satu artikel, tiap section punya ikon
-// & gradient sendiri yang sesuai tema section-nya — bukan foto internet).
+// MODEL: SECTION ARTIKEL (tiap section punya foto asli sesuai temanya.
+// gradient & icon tetap disimpan sebagai fallback kalau foto gagal dimuat,
+// misalnya saat tidak ada koneksi internet).
 // ---------------------------------------------------------------------------
 class ArticleSection {
   final String title;
+  final String imageUrl;
   final IconData icon;
   final List<Color> gradient;
   final String imageLabel;
@@ -29,6 +31,7 @@ class ArticleSection {
 
   const ArticleSection({
     required this.title,
+    required this.imageUrl,
     required this.icon,
     required this.gradient,
     required this.imageLabel,
@@ -45,6 +48,7 @@ class Article {
   final String title;
   final String date;
   final String readTime;
+  final String imageUrl;
   final List<Color> thumbGradient;
   final IconData heroIcon;
   final String intro;
@@ -58,6 +62,7 @@ class Article {
     required this.title,
     required this.date,
     required this.readTime,
+    required this.imageUrl,
     required this.thumbGradient,
     required this.heroIcon,
     this.intro = '',
@@ -76,6 +81,9 @@ final List<Article> articles = [
     title: "Diabetes Penyakit yang Perlu Diwaspadai",
     date: "12 Apr 2025",
     readTime: "3 menit baca",
+    // Foto alat tes gula darah / finger prick, sesuai topik "diabetes".
+    imageUrl:
+        'https://images.pexels.com/photos/6823509/pexels-photo-6823509.jpeg?cs=tinysrgb&dpr=1&w=500',
     thumbGradient: const [Color(0xFF3B3F45), Color(0xFF111318)],
     heroIcon: Icons.bloodtype_rounded,
     intro:
@@ -92,6 +100,9 @@ final List<Article> articles = [
     sections: const [
       ArticleSection(
         title: "Dampak pada Jantung",
+        // Foto dokter memeriksa detak jantung dengan stetoskop.
+        imageUrl:
+            'https://images.pexels.com/photos/5215012/pexels-photo-5215012.jpeg?cs=tinysrgb&dpr=1&w=500',
         icon: Icons.favorite_rounded,
         gradient: [Color(0xFFFF6B6B), Color(0xFFB3261E)],
         imageLabel: "CARDIAC RISK",
@@ -103,7 +114,11 @@ final List<Article> articles = [
       ),
       ArticleSection(
         title: "Dampak pada Ginjal",
-        icon: Icons.water_drop_rounded,
+        // Foto pemeriksaan medis oleh dokter, mewakili pemantauan fungsi
+        // organ (ginjal) secara berkala.
+        imageUrl:
+            'https://images.pexels.com/photos/5215022/pexels-photo-5215022.jpeg?cs=tinysrgb&dpr=1&w=500',
+        icon: Icons.filter_alt_rounded,
         gradient: [Color(0xFF5FA8D3), Color(0xFF1B5E7A)],
         imageLabel: "RENAL FUNCTION",
         description:
@@ -119,6 +134,9 @@ final List<Article> articles = [
     title: "Jumlah Penderita Diabetes Meningkat, Ini Kata WHO",
     date: "10 Apr 2025",
     readTime: "2 menit baca",
+    // Foto peta dunia dengan penanda lokasi, mewakili skala global isu ini.
+    imageUrl:
+        'https://images.pexels.com/photos/8828584/pexels-photo-8828584.jpeg?w=500&h=500&dpr=1',
     thumbGradient: const [Color(0xFF6B93C9), Color(0xFF3A5F96)],
     heroIcon: Icons.public_rounded,
     intro:
@@ -136,6 +154,9 @@ final List<Article> articles = [
     sections: const [
       ArticleSection(
         title: "Faktor Risiko Utama",
+        // Foto alat cek gula darah, mewakili pemantauan faktor risiko.
+        imageUrl:
+            'https://images.pexels.com/photos/6823507/pexels-photo-6823507.jpeg?cs=tinysrgb&dpr=1&w=500',
         icon: Icons.warning_amber_rounded,
         gradient: [Color(0xFFFFB020), Color(0xFFB3760A)],
         imageLabel: "RISK FACTORS",
@@ -146,7 +167,11 @@ final List<Article> articles = [
       ),
       ArticleSection(
         title: "Upaya Respons Global",
-        icon: Icons.public_rounded,
+        // Foto peta dunia dengan penanda lokasi (variasi lain), mewakili
+        // koordinasi upaya lintas negara.
+        imageUrl:
+            'https://images.pexels.com/photos/1078850/pexels-photo-1078850.jpeg?auto=compress&cs=tinysrgb&dpr=1&w=500',
+        icon: Icons.diversity_3_rounded,
         gradient: [Color(0xFF6B93C9), Color(0xFF3A5F96)],
         imageLabel: "GLOBAL RESPONSE",
         description:
@@ -162,8 +187,11 @@ final List<Article> articles = [
     title: "Studi Terbaru: Bisa Dicegah Sejak Dini",
     date: "8 Apr 2025",
     readTime: "4 menit baca",
+    // Foto semangkuk sayuran & quinoa, mewakili pencegahan lewat pola hidup.
+    imageUrl:
+        'https://images.pexels.com/photos/3872370/pexels-photo-3872370.jpeg?cs=tinysrgb&dpr=1&w=500',
     thumbGradient: const [Color(0xFFD8C6B0), Color(0xFFA9876B)],
-    heroIcon: Icons.eco_rounded,
+    heroIcon: Icons.trending_down_rounded,
     intro:
         "Pola makan sehat dan aktivitas fisik rutin terbukti dapat "
         "menurunkan risiko diabetes tipe 2 secara signifikan. Studi "
@@ -178,6 +206,9 @@ final List<Article> articles = [
     sections: const [
       ArticleSection(
         title: "Pola Makan Seimbang",
+        // Foto salad sayuran segar, sesuai tema pola makan seimbang.
+        imageUrl:
+            'https://images.pexels.com/photos/3872373/pexels-photo-3872373.jpeg?auto=compress&w=500&h=500&dpr=1',
         icon: Icons.restaurant_rounded,
         gradient: [Color(0xFFD8C6B0), Color(0xFFA9876B)],
         imageLabel: "NUTRITION",
@@ -188,6 +219,9 @@ final List<Article> articles = [
       ),
       ArticleSection(
         title: "Aktivitas Fisik Rutin",
+        // Foto orang berlari/olahraga outdoor, sesuai tema aktivitas fisik.
+        imageUrl:
+            'https://images.unsplash.com/photo-1476480862126-209bfaa8edc8?w=500&q=80',
         icon: Icons.directions_run_rounded,
         gradient: [Color(0xFF9FD39A), Color(0xFF4F9A5A)],
         imageLabel: "ACTIVE LIFESTYLE",
@@ -204,8 +238,12 @@ final List<Article> articles = [
     title: "Kenali Gejala yang Sering Salah Diartikan",
     date: "6 Apr 2025",
     readTime: "3 menit baca",
+    // Foto alat cek gula darah dengan latar warna, mewakili "mengenali"
+    // tanda-tanda lewat pemeriksaan rutin.
+    imageUrl:
+        'https://images.pexels.com/photos/6941101/pexels-photo-6941101.jpeg?cs=tinysrgb&dpr=1&w=500',
     thumbGradient: const [Color(0xFF9FD39A), Color(0xFF4F9A5A)],
-    heroIcon: Icons.health_and_safety_rounded,
+    heroIcon: Icons.visibility_rounded,
     intro:
         "Beberapa gejala awal diabetes seperti sering haus, mudah lelah, "
         "dan sering buang air kecil kerap dianggap sepele atau disalah "
@@ -219,6 +257,10 @@ final List<Article> articles = [
     sections: const [
       ArticleSection(
         title: "Sering Haus dan Lapar",
+        // Foto sayuran & makanan segar, mewakili kebutuhan tubuh akan
+        // asupan (haus & lapar) yang harus dipantau.
+        imageUrl:
+            'https://images.pexels.com/photos/1640777/pexels-photo-1640777.jpeg?cs=tinysrgb&dpr=1&w=500',
         icon: Icons.local_drink_rounded,
         gradient: [Color(0xFF5FA8D3), Color(0xFF1B5E7A)],
         imageLabel: "EARLY SIGNS",
@@ -229,6 +271,10 @@ final List<Article> articles = [
       ),
       ArticleSection(
         title: "Mudah Lelah dan Luka Sulit Sembuh",
+        // Foto alat pemeriksaan medis, mewakili pemantauan kondisi tubuh
+        // saat gejala kelelahan/luka muncul.
+        imageUrl:
+            'https://images.pexels.com/photos/12326657/pexels-photo-12326657.jpeg?cs=tinysrgb&dpr=1&w=500',
         icon: Icons.healing_rounded,
         gradient: [Color(0xFFFFB020), Color(0xFFB3760A)],
         imageLabel: "WARNING SIGNS",
@@ -245,6 +291,9 @@ final List<Article> articles = [
     title: "Pola Makan Sehat Tingkatkan Imunitas",
     date: "4 Apr 2025",
     readTime: "4 menit baca",
+    // Foto sayuran segar dalam mangkuk, sesuai tema imunitas lewat makanan.
+    imageUrl:
+        'https://images.pexels.com/photos/4198015/pexels-photo-4198015.jpeg?cs=tinysrgb&dpr=1&w=500',
     thumbGradient: const [Color(0xFFE3B45F), Color(0xFFC98A3E)],
     heroIcon: Icons.shield_rounded,
     intro:
@@ -259,6 +308,9 @@ final List<Article> articles = [
     sections: const [
       ArticleSection(
         title: "Sumber Nutrisi Penting",
+        // Foto sayuran segar diiris, sesuai tema sumber nutrisi.
+        imageUrl:
+            'https://images.pexels.com/photos/3872434/pexels-photo-3872434.jpeg?cs=tinysrgb&dpr=1&w=500',
         icon: Icons.eco_rounded,
         gradient: [Color(0xFF9FD39A), Color(0xFF4F9A5A)],
         imageLabel: "KEY NUTRIENTS",
@@ -269,6 +321,10 @@ final List<Article> articles = [
       ),
       ArticleSection(
         title: "Kebiasaan Makan Sehat",
+        // Foto mangkuk salad sayur & kacang-kacangan, sesuai tema
+        // kebiasaan makan sehat sehari-hari.
+        imageUrl:
+            'https://images.pexels.com/photos/3794378/pexels-photo-3794378.jpeg?cs=tinysrgb&dpr=1&w=500',
         icon: Icons.restaurant_menu_rounded,
         gradient: [Color(0xFFE3B45F), Color(0xFFC98A3E)],
         imageLabel: "HEALTHY HABITS",
@@ -280,6 +336,68 @@ final List<Article> articles = [
     ],
   ),
 ];
+
+// ---------------------------------------------------------------------------
+// WIDGET HELPER: gambar network dengan fallback ke ikon + gradient kalau
+// gambar gagal dimuat (mis. tidak ada koneksi internet).
+// ---------------------------------------------------------------------------
+class _ThemedNetworkImage extends StatelessWidget {
+  final String imageUrl;
+  final IconData fallbackIcon;
+  final List<Color> fallbackGradient;
+  final double iconSize;
+
+  const _ThemedNetworkImage({
+    required this.imageUrl,
+    required this.fallbackIcon,
+    required this.fallbackGradient,
+    this.iconSize = 28,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.network(
+      imageUrl,
+      fit: BoxFit.cover,
+      width: double.infinity,
+      height: double.infinity,
+      loadingBuilder: (context, child, progress) {
+        if (progress == null) return child;
+        return Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: fallbackGradient,
+            ),
+          ),
+          child: const Center(
+            child: SizedBox(
+              width: 18,
+              height: 18,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            ),
+          ),
+        );
+      },
+      errorBuilder: (context, error, stackTrace) => Container(
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: fallbackGradient,
+          ),
+        ),
+        child: Center(
+          child: Icon(fallbackIcon, color: Colors.white, size: iconSize),
+        ),
+      ),
+    );
+  }
+}
 
 // ---------------------------------------------------------------------------
 // SCREEN: LIST ARTIKEL
@@ -436,7 +554,7 @@ class _ArticleListScreenState extends State<ArticleListScreen> {
 }
 
 // ---------------------------------------------------------------------------
-// WIDGET: KARTU ARTIKEL (untuk list) — thumbnail ikon + gradient sesuai tema
+// WIDGET: KARTU ARTIKEL (untuk list) — thumbnail foto asli sesuai tema
 // ---------------------------------------------------------------------------
 class ArticleCard extends StatelessWidget {
   final Article article;
@@ -458,18 +576,17 @@ class ArticleCard extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: article.thumbGradient,
+            ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: SizedBox(
+                width: 64,
+                height: 64,
+                child: _ThemedNetworkImage(
+                  imageUrl: article.imageUrl,
+                  fallbackIcon: article.heroIcon,
+                  fallbackGradient: article.thumbGradient,
                 ),
               ),
-              child: Icon(article.heroIcon, color: Colors.white, size: 28),
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -536,7 +653,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
       backgroundColor: Colors.white,
       body: CustomScrollView(
         slivers: [
-          // ---------------- HEADER / HERO (ikon + gradient sesuai tema) ----------------
+          // ---------------- HEADER / HERO (foto asli sesuai tema) ----------------
           SliverAppBar(
             expandedHeight: 240,
             pinned: true,
@@ -577,21 +694,11 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  Container(
-                    decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: article.thumbGradient,
-                      ),
-                    ),
-                    child: Center(
-                      child: Icon(
-                        article.heroIcon,
-                        size: 84,
-                        color: Colors.white.withValues(alpha: 0.85),
-                      ),
-                    ),
+                  _ThemedNetworkImage(
+                    imageUrl: article.imageUrl,
+                    fallbackIcon: article.heroIcon,
+                    fallbackGradient: article.thumbGradient,
+                    iconSize: 84,
                   ),
                   DecoratedBox(
                     decoration: BoxDecoration(
@@ -680,6 +787,7 @@ class _ArticleDetailScreenState extends State<ArticleDetailScreen> {
                     SectionArtikel(
                       nomor: i + 1,
                       judul: article.sections[i].title,
+                      imageUrl: article.sections[i].imageUrl,
                       icon: article.sections[i].icon,
                       gradient: article.sections[i].gradient,
                       labelGambar: article.sections[i].imageLabel,
@@ -764,12 +872,13 @@ class HighlightBox extends StatelessWidget {
 }
 
 // ---------------------------------------------------------------------------
-// WIDGET: Reusable section untuk tiap bagian artikel — ikon + gradient
-// sesuai tema section (bukan foto internet), dengan label pojok kanan atas.
+// WIDGET: Reusable section untuk tiap bagian artikel — foto asli sesuai
+// tema section, dengan label pojok kanan atas.
 // ---------------------------------------------------------------------------
 class SectionArtikel extends StatelessWidget {
   final int nomor;
   final String judul;
+  final String imageUrl;
   final IconData icon;
   final List<Color> gradient;
   final String labelGambar;
@@ -779,6 +888,7 @@ class SectionArtikel extends StatelessWidget {
     super.key,
     required this.nomor,
     required this.judul,
+    required this.imageUrl,
     required this.icon,
     required this.gradient,
     required this.labelGambar,
@@ -801,17 +911,11 @@ class SectionArtikel extends StatelessWidget {
             children: [
               AspectRatio(
                 aspectRatio: 16 / 9,
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: gradient,
-                    ),
-                  ),
-                  child: Center(
-                    child: Icon(icon, size: 52, color: Colors.white.withValues(alpha: 0.9)),
-                  ),
+                child: _ThemedNetworkImage(
+                  imageUrl: imageUrl,
+                  fallbackIcon: icon,
+                  fallbackGradient: gradient,
+                  iconSize: 52,
                 ),
               ),
               Positioned(
@@ -880,17 +984,15 @@ class RelatedArticleCard extends StatelessWidget {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(10),
-              child: Container(
+              child: SizedBox(
                 width: 60,
                 height: 60,
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                    colors: article.thumbGradient,
-                  ),
+                child: _ThemedNetworkImage(
+                  imageUrl: article.imageUrl,
+                  fallbackIcon: article.heroIcon,
+                  fallbackGradient: article.thumbGradient,
+                  iconSize: 26,
                 ),
-                child: Icon(article.heroIcon, color: Colors.white, size: 26),
               ),
             ),
             const SizedBox(width: 12),

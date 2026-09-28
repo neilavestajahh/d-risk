@@ -11,18 +11,21 @@ const Color _kdTextGrey = Color(0xFF7A8B9E);
 const Color _kdCardBorderColor = Color(0xFFE2E8F0);
 const Color _kdLightGreenBg = Color(0xFFE7F7EF);
 const Color _kdAccentGreen = Color(0xFF22A45D);
+const Color _kdChipBg = Color(0xFFEFF4FF);
 
 class _DoctorItem {
   final String name;
   final String specialty;
-  final String imageSeed;
+
+  /// Link foto dokter (dimuat dari internet)
+  final String photoUrl;
   final double rating;
   final int reviewCount;
 
   const _DoctorItem({
     required this.name,
     required this.specialty,
-    required this.imageSeed,
+    required this.photoUrl,
     this.rating = 4.8,
     this.reviewCount = 120,
   });
@@ -36,17 +39,72 @@ class KonsultasiDokterScreen extends StatelessWidget {
     _DoctorItem(
       name: 'dr. Amelia Putri',
       specialty: 'Dokter Umum',
-      imageSeed: '11',
+      photoUrl: 'https://images.pexels.com/photos/5998477/pexels-photo-5998477.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+      rating: 4.9,
+      reviewCount: 128,
     ),
     _DoctorItem(
       name: 'dr. Dewa Saputra',
       specialty: 'Dokter Umum',
-      imageSeed: '12',
+      photoUrl: 'https://images.pexels.com/photos/19438560/pexels-photo-19438560.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+      rating: 4.7,
+      reviewCount: 81,
     ),
     _DoctorItem(
       name: 'dr. Yolanda M.A.R.S',
-      specialty: 'Dokter umum',
-      imageSeed: '13',
+      specialty: 'Dokter Umum',
+      photoUrl: 'https://images.pexels.com/photos/19218034/pexels-photo-19218034.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+      rating: 4.8,
+      reviewCount: 92,
+    ),
+    _DoctorItem(
+      name: 'dr. Sania Pramita',
+      specialty: 'Dokter Umum',
+      photoUrl: 'https://images.pexels.com/photos/4227075/pexels-photo-4227075.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+      rating: 4.8,
+      reviewCount: 76,
+    ),
+    _DoctorItem(
+      name: 'dr. Neila Azzahra',
+      specialty: 'Dokter Umum',
+      photoUrl: 'https://images.pexels.com/photos/8376309/pexels-photo-8376309.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+      rating: 4.8,
+      reviewCount: 69,
+    ),
+    _DoctorItem(
+      name: 'dr. Sinta Dewi, Sp.PD',
+      specialty: 'Spesialis Penyakit Dalam',
+      photoUrl: 'https://images.pexels.com/photos/6749773/pexels-photo-6749773.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+      rating: 4.8,
+      reviewCount: 110,
+    ),
+    _DoctorItem(
+      name: 'dr. Rangga Saputra, Sp.PD',
+      specialty: 'Spesialis Penyakit Dalam',
+      photoUrl: 'https://images.pexels.com/photos/6129574/pexels-photo-6129574.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+      rating: 4.8,
+      reviewCount: 96,
+    ),
+    _DoctorItem(
+      name: 'dr. Bagas Pratama, Sp.PD-KEMD',
+      specialty: 'Spesialis Endokrin & Diabetes',
+      photoUrl: 'https://images.pexels.com/photos/7108250/pexels-photo-7108250.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+      rating: 4.9,
+      reviewCount: 142,
+    ),
+    _DoctorItem(
+      name: 'dr. Maya Kusuma, Sp.B',
+      specialty: 'Spesialis Bedah',
+      photoUrl: 'https://images.pexels.com/photos/9893870/pexels-photo-9893870.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+      rating: 4.8,
+      reviewCount: 88,
+    ),
+    _DoctorItem(
+      name: 'dr. Fajar Nugroho, Sp.B',
+      specialty: 'Spesialis Bedah',
+      photoUrl: 'https://images.pexels.com/photos/8460090/pexels-photo-8460090.jpeg?auto=compress&cs=tinysrgb&w=400&h=400&fit=crop',
+      rating: 4.8,
+      reviewCount: 73,
     ),
   ];
 
@@ -85,12 +143,14 @@ class KonsultasiDokterScreen extends StatelessWidget {
               child: const Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.chat_bubble_outline_rounded, color: _kdAccentGreen, size: 18),
+                  Icon(Icons.chat_bubble_outline_rounded,
+                      color: _kdAccentGreen, size: 18),
                   SizedBox(width: 10),
                   Expanded(
                     child: Text(
                       'Konsultasikan keluhan kesehatanmu langsung dengan dokter terpercaya.',
-                      style: TextStyle(fontSize: 12.5, color: _kdNavyDark, height: 1.4),
+                      style: TextStyle(
+                          fontSize: 12.5, color: _kdNavyDark, height: 1.4),
                     ),
                   ),
                 ],
@@ -118,6 +178,27 @@ class KonsultasiDokterScreen extends StatelessWidget {
     );
   }
 
+  /// Foto dokter dari internet. Kalau gagal dimuat,
+  /// tampil ikon orang sebagai cadangan (tidak bikin aplikasi crash).
+  Widget _buildDoctorPhoto(_DoctorItem doctor) {
+    const double size = 56;
+    return ClipOval(
+      child: Image.network(
+        doctor.photoUrl,
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+        alignment: Alignment.topCenter, // supaya wajah tidak terpotong
+        errorBuilder: (context, error, stackTrace) => Container(
+          width: size,
+          height: size,
+          color: _kdChipBg,
+          child: const Icon(Icons.person, color: _kdPrimaryBlue, size: 30),
+        ),
+      ),
+    );
+  }
+
   Widget _buildDoctorCard(BuildContext context, _DoctorItem doctor) {
     return InkWell(
       onTap: () {
@@ -129,7 +210,7 @@ class KonsultasiDokterScreen extends StatelessWidget {
               specialty: doctor.specialty,
               rating: doctor.rating,
               reviewCount: doctor.reviewCount,
-              imageSeed: doctor.imageSeed,
+              photoUrl: doctor.photoUrl,
             ),
           ),
         );
@@ -144,20 +225,7 @@ class KonsultasiDokterScreen extends StatelessWidget {
         ),
         child: Row(
           children: [
-            ClipOval(
-              child: Image.network(
-                'https://api.dicebear.com/7.x/avataaars/png?seed=${Uri.encodeComponent(doctor.name)}',
-                width: 48,
-                height: 48,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
-                  width: 48,
-                  height: 48,
-                  color: const Color(0xFFF1F5F9),
-                  child: const Icon(Icons.person, color: _kdTextGrey),
-                ),
-              ),
-            ),
+            _buildDoctorPhoto(doctor),
             const SizedBox(width: 14),
             Expanded(
               child: Column(

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'register_page.dart';
+import 'welcome_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -18,8 +18,8 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color(0xFFF7F8FA),
         colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1E88E5)),
       ),
-      // Halaman pertama yang muncul saat app dibuka
-      home: const RegisterPage(),
+      // Halaman pertama yang muncul saat app dibuka: Welcome (logo + login)
+      home: const WelcomePage(),
     );
   }
 }

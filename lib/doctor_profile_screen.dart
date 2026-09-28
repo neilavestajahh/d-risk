@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'chat_konsultasi_screen.dart';
-// Catatan: import ke jadwal_booking_screen.dart TIDAK dipakai lagi di file ini,
-// karena tombol "Mulai Konsultasi" sekarang langsung membuka halaman chat.
 // Sesuaikan nama file import 'chat_konsultasi_screen.dart' di atas dengan
 // nama file tempat kamu menyimpan class ChatKonsultasiScreen.
 
@@ -25,7 +23,9 @@ class DoctorProfileScreen extends StatelessWidget {
   final String specialty;
   final double rating;
   final int reviewCount;
-  final String imageSeed;
+
+  /// Link foto dokter (dimuat dari internet)
+  final String photoUrl;
   final String experience;
   final List<String> tags;
   final String about;
@@ -36,15 +36,34 @@ class DoctorProfileScreen extends StatelessWidget {
     super.key,
     required this.name,
     required this.specialty,
+    required this.photoUrl,
     this.rating = 4.8,
     this.reviewCount = 120,
-    required this.imageSeed,
     this.experience = '5 tahun pengalaman',
     this.tags = const ['Konsultasi Umum'],
     this.about = '',
     this.scheduleDays = 'Senin - Sabtu',
     this.scheduleTime = '08:00 - 16:00 WIB',
   });
+
+  Widget _buildDoctorPhoto() {
+    const double size = 96;
+    return ClipOval(
+      child: Image.network(
+        photoUrl,
+        width: size,
+        height: size,
+        fit: BoxFit.cover,
+        alignment: Alignment.topCenter, // supaya wajah tidak terpotong
+        errorBuilder: (context, error, stackTrace) => Container(
+          width: size,
+          height: size,
+          color: _ddChipBg,
+          child: const Icon(Icons.person, color: _ddPrimaryBlue, size: 48),
+        ),
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,7 +82,8 @@ class DoctorProfileScreen extends StatelessWidget {
               child: Row(
                 children: [
                   IconButton(
-                    icon: const Icon(Icons.arrow_back, color: _ddNavyDark, size: 22),
+                    icon: const Icon(Icons.arrow_back,
+                        color: _ddNavyDark, size: 22),
                     onPressed: () => Navigator.maybePop(context),
                   ),
                 ],
@@ -77,20 +97,7 @@ class DoctorProfileScreen extends StatelessWidget {
                     child: Stack(
                       clipBehavior: Clip.none,
                       children: [
-                        ClipOval(
-                          child: Image.network(
-                            'https://api.dicebear.com/7.x/avataaars/png?seed=${Uri.encodeComponent(name)}',
-                            width: 96,
-                            height: 96,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) => Container(
-                              width: 96,
-                              height: 96,
-                              color: const Color(0xFFF1F5F9),
-                              child: const Icon(Icons.person, color: _ddTextGrey, size: 40),
-                            ),
-                          ),
-                        ),
+                        _buildDoctorPhoto(),
                         Positioned(
                           bottom: 4,
                           right: 4,
@@ -111,7 +118,10 @@ class DoctorProfileScreen extends StatelessWidget {
                   const Center(
                     child: Text(
                       'Online',
-                      style: TextStyle(fontSize: 12, color: _ddAccentGreen, fontWeight: FontWeight.w600),
+                      style: TextStyle(
+                          fontSize: 12,
+                          color: _ddAccentGreen,
+                          fontWeight: FontWeight.w600),
                     ),
                   ),
                   const SizedBox(height: 10),
@@ -128,7 +138,8 @@ class DoctorProfileScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 4),
-                        const Icon(Icons.verified_rounded, color: _ddPrimaryBlue, size: 18),
+                        const Icon(Icons.verified_rounded,
+                            color: _ddPrimaryBlue, size: 18),
                       ],
                     ),
                   ),
@@ -144,22 +155,29 @@ class DoctorProfileScreen extends StatelessWidget {
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
-                        const Icon(Icons.star_rounded, color: _ddStarYellow, size: 18),
+                        const Icon(Icons.star_rounded,
+                            color: _ddStarYellow, size: 18),
                         const SizedBox(width: 2),
                         Text(
                           '$rating',
-                          style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _ddNavyDark),
+                          style: const TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: _ddNavyDark),
                         ),
                         Text(
                           ' ($reviewCount ulasan)',
-                          style: const TextStyle(fontSize: 12, color: _ddTextGrey),
+                          style: const TextStyle(
+                              fontSize: 12, color: _ddTextGrey),
                         ),
                         const SizedBox(width: 12),
-                        const Icon(Icons.work_outline_rounded, color: _ddTextGrey, size: 16),
+                        const Icon(Icons.work_outline_rounded,
+                            color: _ddTextGrey, size: 16),
                         const SizedBox(width: 3),
                         Text(
                           experience,
-                          style: const TextStyle(fontSize: 12, color: _ddTextGrey),
+                          style: const TextStyle(
+                              fontSize: 12, color: _ddTextGrey),
                         ),
                       ],
                     ),
@@ -172,14 +190,18 @@ class DoctorProfileScreen extends StatelessWidget {
                     children: tags
                         .map(
                           (tag) => Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 12, vertical: 6),
                             decoration: BoxDecoration(
                               color: _ddChipBg,
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
                               tag,
-                              style: const TextStyle(fontSize: 12, color: _ddPrimaryBlue, fontWeight: FontWeight.w500),
+                              style: const TextStyle(
+                                  fontSize: 12,
+                                  color: _ddPrimaryBlue,
+                                  fontWeight: FontWeight.w500),
                             ),
                           ),
                         )
@@ -188,17 +210,24 @@ class DoctorProfileScreen extends StatelessWidget {
                   const SizedBox(height: 24),
                   const Text(
                     'Tentang Dokter',
-                    style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700, color: _ddNavyDark),
+                    style: TextStyle(
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w700,
+                        color: _ddNavyDark),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     aboutText,
-                    style: const TextStyle(fontSize: 13, color: _ddTextGrey, height: 1.5),
+                    style: const TextStyle(
+                        fontSize: 13, color: _ddTextGrey, height: 1.5),
                   ),
                   const SizedBox(height: 24),
                   const Text(
                     'Jadwal Praktik',
-                    style: TextStyle(fontSize: 14.5, fontWeight: FontWeight.w700, color: _ddNavyDark),
+                    style: TextStyle(
+                        fontSize: 14.5,
+                        fontWeight: FontWeight.w700,
+                        color: _ddNavyDark),
                   ),
                   const SizedBox(height: 10),
                   Container(
@@ -216,7 +245,8 @@ class DoctorProfileScreen extends StatelessWidget {
                             color: _ddChipBg,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: const Icon(Icons.calendar_today_rounded, color: _ddPrimaryBlue, size: 18),
+                          child: const Icon(Icons.calendar_today_rounded,
+                              color: _ddPrimaryBlue, size: 18),
                         ),
                         const SizedBox(width: 12),
                         Expanded(
@@ -225,17 +255,22 @@ class DoctorProfileScreen extends StatelessWidget {
                             children: [
                               Text(
                                 scheduleDays,
-                                style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600, color: _ddNavyDark),
+                                style: const TextStyle(
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: _ddNavyDark),
                               ),
                               const SizedBox(height: 2),
                               Text(
                                 scheduleTime,
-                                style: const TextStyle(fontSize: 12, color: _ddTextGrey),
+                                style: const TextStyle(
+                                    fontSize: 12, color: _ddTextGrey),
                               ),
                             ],
                           ),
                         ),
-                        const Icon(Icons.chevron_right_rounded, color: _ddTextGrey),
+                        const Icon(Icons.chevron_right_rounded,
+                            color: _ddTextGrey),
                       ],
                     ),
                   ),
@@ -267,7 +302,8 @@ class DoctorProfileScreen extends StatelessWidget {
                   style: ElevatedButton.styleFrom(
                     backgroundColor: _ddPrimaryBlue,
                     foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14)),
                     elevation: 0,
                   ),
                 ),

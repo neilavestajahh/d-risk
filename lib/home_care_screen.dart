@@ -41,6 +41,8 @@ class HomeCareScreen extends StatefulWidget {
 }
 
 class _HomeCareScreenState extends State<HomeCareScreen> {
+  // Klik card "Perawatan Luka" -> langsung push ke PerawatanLukaScreen
+  // (halaman awal perawatan luka), sesuai builder di bawah.
   static final List<_HomeCareOption> _options = [
     _HomeCareOption(
       icon: Icons.healing,
@@ -202,6 +204,8 @@ class _HomeCareScreenState extends State<HomeCareScreen> {
           );
           return;
         }
+        // Langsung buka halaman awal layanan (mis. PerawatanLukaScreen)
+        // tanpa halaman perantara.
         Navigator.of(context).push(MaterialPageRoute(builder: opt.builder!));
       },
       borderRadius: BorderRadius.circular(16),

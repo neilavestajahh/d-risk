@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 
+import 'bot_dokter.dart';
+
+// Letakkan di: lib/chat_konsultasi_screen.dart
+// (langsung di lib/, BUKAN di lib/screens/)
+// Pastikan lib/bot_dokter.dart juga sudah ada.
+
 // ---------------------------------------------------------------------------
 // MODEL DATA
 // ---------------------------------------------------------------------------
@@ -40,26 +46,17 @@ class _ChatKonsultasiScreenState extends State<ChatKonsultasiScreen> {
   final TextEditingController _messageController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
 
-  // Catatan: list ini SENGAJA tidak const, karena isinya ditambah lewat
+  /// true saat bot sedang "mengetik" balasan.
+  bool _isTyping = false;
+
+  // List ini SENGAJA tidak const, karena isinya ditambah lewat
   // _sendMessage() saat pengguna mengirim pesan baru.
   final List<ChatMessage> _messages = [
     const ChatMessage(
       sender: SenderType.doctor,
       text:
-          'Selamat pagi, Anda dapat menjelaskan keluhan atau pertanyaan terkait kondisi kesehatan Anda. Saya akan membantu sebaik mungkin.',
+          'Halo, saya asisten konsultasi diabetes. Silakan ceritakan keluhan atau pertanyaanmu, misalnya soal gejala, risiko, kadar gula darah, pola makan, atau olahraga.',
       time: '09:40',
-    ),
-    const ChatMessage(
-      sender: SenderType.user,
-      text:
-          'Selamat pagi dok, saya ingin konsultasi mengenai risiko diabetes. Saya sering merasa cepat lelah, terutama setelah makan, dan berat badan saya akhir-akhir ini sedikit naik.',
-      time: '09:42',
-    ),
-    const ChatMessage(
-      sender: SenderType.doctor,
-      text:
-          'Baik, terima kasih atas informasinya. Untuk memberikan saran yang tepat, saya akan menanyakan beberapa hal terlebih dahulu. Apakah ada riwayat keluarga dengan diabetes?',
-      time: '09:43',
     ),
   ];
 
@@ -70,17 +67,54 @@ class _ChatKonsultasiScreenState extends State<ChatKonsultasiScreen> {
     super.dispose();
   }
 
-  void _sendMessage() {
+  String _nowTime() {
+    final now = DateTime.now();
+    final h = now.hour.toString().padLeft(2, '0');
+    final m = now.minute.toString().padLeft(2, '0');
+    return '$h:$m';
+  }
+
+  void _scrollToBottom() {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!_scrollController.hasClients) return;
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 250),
+        curve: Curves.easeOut,
+      );
+    });
+  }
+
+  Future<void> _sendMessage() async {
     final text = _messageController.text.trim();
-    if (text.isEmpty) return;
+    if (text.isEmpty || _isTyping) return;
+
     setState(() {
       _messages.add(ChatMessage(
         sender: SenderType.user,
         text: text,
-        time: 'Sekarang',
+        time: _nowTime(),
       ));
       _messageController.clear();
+      _isTyping = true;
     });
+    _scrollToBottom();
+
+    // Jeda supaya terasa seperti dokter sedang mengetik.
+    await Future.delayed(const Duration(milliseconds: 1200));
+    if (!mounted) return;
+
+    final balasan = BotDokter.balas(text);
+
+    setState(() {
+      _messages.add(ChatMessage(
+        sender: SenderType.doctor,
+        text: balasan,
+        time: _nowTime(),
+      ));
+      _isTyping = false;
+    });
+    _scrollToBottom();
   }
 
   @override
@@ -98,8 +132,13 @@ class _ChatKonsultasiScreenState extends State<ChatKonsultasiScreen> {
               child: ListView.builder(
                 controller: _scrollController,
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                itemCount: _messages.length,
-                itemBuilder: (context, index) => _buildMessageBubble(_messages[index]),
+                itemCount: _messages.length + (_isTyping ? 1 : 0),
+                itemBuilder: (context, index) {
+                  if (index == _messages.length) {
+                    return _buildTypingBubble();
+                  }
+                  return _buildMessageBubble(_messages[index]);
+                },
               ),
             ),
             _buildMessageInputBar(),
@@ -143,7 +182,6 @@ class _ChatKonsultasiScreenState extends State<ChatKonsultasiScreen> {
       padding: const EdgeInsets.fromLTRB(16, 4, 16, 8),
       child: Row(
         children: [
-          // Avatar dokter — pakai ikon placeholder (belum ada foto asli).
           Container(
             width: 44,
             height: 44,
@@ -173,12 +211,12 @@ class _ChatKonsultasiScreenState extends State<ChatKonsultasiScreen> {
                 ),
                 const SizedBox(height: 2),
                 Row(
-                  children: const [
-                    Icon(Icons.circle, color: Color(0xFF27AE60), size: 7),
-                    SizedBox(width: 4),
+                  children: [
+                    const Icon(Icons.circle, color: Color(0xFF27AE60), size: 7),
+                    const SizedBox(width: 4),
                     Text(
-                      'Online',
-                      style: TextStyle(
+                      _isTyping ? 'Sedang mengetik...' : 'Online',
+                      style: const TextStyle(
                         fontSize: 11,
                         fontWeight: FontWeight.w600,
                         color: Color(0xFF27AE60),
@@ -212,14 +250,14 @@ class _ChatKonsultasiScreenState extends State<ChatKonsultasiScreen> {
         color: const Color(0xFFE8F1FD),
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Row(
+      child: const Row(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
+        children: [
           Icon(Icons.verified_user, color: Color(0xFF2F80ED), size: 16),
           SizedBox(width: 8),
           Expanded(
             child: Text(
-              'Konsultasi ini bersifat rahasia dan hanya dapat diakses oleh Anda dan dokter.',
+              'Balasan di sini bersifat otomatis dan berupa informasi umum, bukan diagnosis dokter.',
               style: TextStyle(fontSize: 11.5, color: Color(0xFF2F80ED), height: 1.4),
             ),
           ),
@@ -232,11 +270,58 @@ class _ChatKonsultasiScreenState extends State<ChatKonsultasiScreen> {
   // BUBBLE PESAN
   // -------------------------------------------------------------------------
 
+  Widget _buildDoctorAvatar() {
+    return Container(
+      width: 32,
+      height: 32,
+      decoration: BoxDecoration(
+        color: const Color(0xFFE8F1FD),
+        borderRadius: BorderRadius.circular(16),
+      ),
+      alignment: Alignment.center,
+      child: const Icon(Icons.person, size: 16, color: Color(0xFF2F80ED)),
+    );
+  }
+
+  Widget _buildTypingBubble() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _buildDoctorAvatar(),
+          const SizedBox(width: 8),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: const BoxDecoration(
+              color: Color(0xFFF1F2F4),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(16),
+                topRight: Radius.circular(16),
+                bottomLeft: Radius.circular(4),
+                bottomRight: Radius.circular(16),
+              ),
+            ),
+            child: const Text(
+              '...',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                color: Colors.black45,
+                height: 1,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildMessageBubble(ChatMessage message) {
     final isDoctor = message.sender == SenderType.doctor;
 
     final bubble = Container(
-      constraints: const BoxConstraints(maxWidth: 230),
+      constraints: const BoxConstraints(maxWidth: 260),
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
       decoration: BoxDecoration(
         color: isDoctor ? const Color(0xFFF1F2F4) : const Color(0xFF2F80ED),
@@ -271,17 +356,7 @@ class _ChatKonsultasiScreenState extends State<ChatKonsultasiScreen> {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Avatar kecil di tiap bubble dokter — ikon placeholder juga.
-            Container(
-              width: 32,
-              height: 32,
-              decoration: BoxDecoration(
-                color: const Color(0xFFE8F1FD),
-                borderRadius: BorderRadius.circular(16),
-              ),
-              alignment: Alignment.center,
-              child: const Icon(Icons.person, size: 16, color: Color(0xFF2F80ED)),
-            ),
+            _buildDoctorAvatar(),
             const SizedBox(width: 8),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -332,11 +407,14 @@ class _ChatKonsultasiScreenState extends State<ChatKonsultasiScreen> {
                   controller: _messageController,
                   minLines: 1,
                   maxLines: 4,
+                  textInputAction: TextInputAction.send,
+                  onSubmitted: (_) => _sendMessage(),
                   decoration: const InputDecoration(
                     hintText: 'Tulis pesan...',
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 13),
                     border: InputBorder.none,
-                    contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                    contentPadding:
+                        EdgeInsets.symmetric(horizontal: 16, vertical: 10),
                   ),
                 ),
               ),

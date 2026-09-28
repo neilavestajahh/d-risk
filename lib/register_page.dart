@@ -1,7 +1,7 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'home_page.dart';
-import 'login_page.dart';
+import 'welcome_page.dart';
 import 'user_store.dart';
 
 /// Halaman Registrasi Pengguna D-risk (Diabetes Risk Screening)
@@ -423,7 +423,7 @@ class _RegisterPageState extends State<RegisterPage> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const LoginPage()),
+                MaterialPageRoute(builder: (context) => const WelcomePage()),
               );
             },
             icon: const Icon(
@@ -431,7 +431,7 @@ class _RegisterPageState extends State<RegisterPage> {
               color: darkText,
               size: 32,
             ),
-            tooltip: 'Kembali ke Login',
+            tooltip: 'Kembali ke Beranda',
           ),
         ],
       ),
@@ -703,7 +703,7 @@ class _RegisterPageState extends State<RegisterPage> {
                 ..onTap = () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
+                    MaterialPageRoute(builder: (context) => const WelcomePage()),
                   );
                 },
             ),

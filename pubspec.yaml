@@ -1,16 +1,18 @@
 name: d_risk
-description: "D-risk - Diabetes Risk Screening Mobile Application"
-publish_to: "none"
+description: "Aplikasi D-Risk."
+publish_to: 'none'
 version: 1.0.0+1
 
 environment:
-  sdk: ">=3.0.0 <4.0.0"
+  sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  shared_preferences: ^2.2.2
-  google_fonts: ^6.2.1
+  cupertino_icons: ^1.0.6
+  shared_preferences: ^2.5.0
+  google_fonts: ^6.3.0
+  http: ^1.2.0
 
 dev_dependencies:
   flutter_test:
@@ -19,3 +21,12 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+
+  # Aset gambar (logo, dll). Folder yang tidak ada hanya memunculkan
+  # peringatan, tidak membuat build gagal.
+  # Kalau logo-mu ada di folder lain, tambahkan barisnya di sini.
+  assets:
+    - assets/
+    - assets/images/
+    - assets/logo/
+    - assets/icons/
